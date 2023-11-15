@@ -3,9 +3,15 @@ let api_base_url = 'http://localhost:3001';
 async function main() {
     let response = await fetch(api_base_url + '/listBooks');
     let books = await response.json();
-    console.log(books);
+
+    // Clear existing book cards
+    let bookContainer = document.querySelector('.book-container');
+    bookContainer.innerHTML = '';
+
+    // Render the updated book list
     books.forEach(renderBook);
 }
+
 
 function renderBook(book) {
     let bookContainer = document.querySelector('.book-container');
@@ -36,22 +42,22 @@ function renderBook(book) {
 
 async function updateQuantityOnServer(bookId, newQuantity) {
     try {
-        let response = await fetch(api_base_url + `/updateQuantity/${bookId}`, {
-            method: 'POST',
+        let response = await fetch(api_base_url + '/updateBook', {
+            method: 'PATCH',
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ quantity: newQuantity }),
+            body: JSON.stringify({ id: bookId, quantity: newQuantity }),
         });
-
+        
         if (!response.ok) {
             throw new Error(`Error updating quantity: ${response.statusText}`);
         }
 
         console.log('Quantity updated successfully');
 
-        // Optionally, you can refresh the book list after updating the quantity
-        // main();
+        // Refresh the book list in the regular user interface
+        main();
     } catch (error) {
         console.error('Error updating quantity:', error);
     }
